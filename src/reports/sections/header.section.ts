@@ -16,23 +16,45 @@ const logo: Content = {
   margin: [0, 10, 0, 20],
 };
 
+const currentDate: Content = {
+  text: DateFormatter.getDDMMYYYY(new Date()),
+  alignment: 'right',
+  margin: [20, 20, 20, 20],
+  width: 150,
+};
+
 export const headerSection = (options: HeaderOptions): Content => {
   const { title, subtitle, showLogo = true, showDate = true } = options;
 
   const headerLogo: Content = showLogo ? logo : null;
-  const headerDate: Content = showDate
+  const headerDate: Content = showDate ? currentDate : null;
+
+  const headerSubtitle: Content = subtitle
     ? {
-        text: DateFormatter.getDDMMYYYY(new Date()),
-        alignment: 'right',
-        margin: [20, 20, 20, 20],
-      }
-    : null;
-  const headerTitle: Content = title
-    ? {
-        text: title,
+        text: subtitle,
+        alignment: 'center',
+        margin: [0, 2, 0, 0],
         style: {
+          fontSize: 16,
           bold: true,
         },
+      }
+    : null;
+
+  const headerTitle: Content = title
+    ? {
+        stack: [
+          {
+            text: title,
+            alignment: 'center',
+            margin: [0, 15, 0, 0],
+            style: {
+              bold: true,
+              fontSize: 22,
+            },
+          },
+          headerSubtitle,
+        ],
       }
     : null;
 
