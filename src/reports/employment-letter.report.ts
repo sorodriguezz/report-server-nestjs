@@ -3,6 +3,8 @@ import {
   StyleDictionary,
   TDocumentDefinitions,
 } from 'pdfmake/interfaces';
+import { DateFormatter } from './../helpers/date-formatter';
+import { headerSection } from './sections/header.section';
 
 interface ReportOptions {
   name: string;
@@ -31,14 +33,6 @@ const style: StyleDictionary = {
   },
 };
 
-const logo: Content = {
-  image: 'src/assets/tucan-code-logo.png',
-  width: 100,
-  height: 100,
-  alignment: 'center',
-  margin: [0, 10, 0, 20],
-};
-
 export const getEmploymentLetterReport = (
   options: ReportOptions,
 ): TDocumentDefinitions => {
@@ -47,16 +41,7 @@ export const getEmploymentLetterReport = (
   const docDefinition: TDocumentDefinitions = {
     styles: style,
     pageMargins: [40, 60, 40, 60],
-    header: {
-      columns: [
-        logo,
-        {
-          text: `${new Date()}`,
-          alignment: 'right',
-          margin: [20, 20, 20, 20],
-        },
-      ],
-    },
+    header: headerSection({}),
     content: [
       {
         text: 'CONSTANCIA DE EMPLEO',
@@ -80,8 +65,7 @@ export const getEmploymentLetterReport = (
         [Nombre del Empleador]
         [Cargo del Empleador]
         [Nombre de la Empresa]
-        [Fecha de Emisión]
-        20 de mayo de 2024`,
+        [Fecha de Emisión]`,
         style: 'signature',
       },
     ],
