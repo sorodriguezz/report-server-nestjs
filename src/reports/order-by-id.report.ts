@@ -27,7 +27,58 @@ const styles: StyleDictionary = {
   },
 };
 
-export const orderByIdReport = (): TDocumentDefinitions => {
+export interface CompleteOrder {
+  order_id: number;
+  customer_id: number;
+  order_date: string;
+  customers: Customers;
+  order_details: OrderDetail[];
+}
+
+export interface Customers {
+  customer_id: number;
+  customer_name: string;
+  contact_name: string;
+  address: string;
+  city: string;
+  postal_code: string;
+  country: string;
+}
+
+export interface OrderDetail {
+  order_detail_id: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
+  products: Products;
+}
+
+export interface Products {
+  product_id: number;
+  product_name: string;
+  category_id: number;
+  unit: string;
+  price: string;
+}
+
+interface ReportValues {
+  title?: string;
+  subtitle?: string;
+  data: CompleteOrder;
+}
+
+export const orderByIdReport = (value: ReportValues): TDocumentDefinitions => {
+  const { data } = value;
+  const { customers, order_details } = data;
+
+  const subTotal = order_details.reduce(
+    (acc, orderDetail) =>
+      acc + parseFloat(orderDetail.products.price) * orderDetail.quantity,
+    0,
+  );
+
+  const total = subTotal * 1.15;
+
   return {
     styles: styles,
     header: logo,
@@ -45,11 +96,11 @@ export const orderByIdReport = (): TDocumentDefinitions => {
           },
           {
             text: [
-              { text: 'Recibo No. 123456\n', bold: true },
+              { text: `Recibo No. ${data.order_id}\n`, bold: true },
               {
                 text: `Fecha del recibo: ${DateFormatter.getDDMMYYYY(
-                  new Date(),
-                )}`,
+                  new Date(data.order_date),
+                )}\n`,
               },
               {
                 text: `Pagar antes de: ${DateFormatter.getDDMMYYYY(
@@ -70,9 +121,9 @@ export const orderByIdReport = (): TDocumentDefinitions => {
         text: [
           { text: 'Cobrar a: \n', style: 'subHeader' },
           `
-          Razón Social: Richter Supermarkt
-          Michael Holz
-          Grenzacherweg 237`,
+          Razón Social: ${customers.customer_name}
+          Contact: ${customers.contact_name}
+          Dirección: ${customers.address}`,
         ],
       },
       {
@@ -83,23 +134,23 @@ export const orderByIdReport = (): TDocumentDefinitions => {
           widths: [50, '*', 'auto', 'auto', 'auto'],
           body: [
             ['ID', 'Descripción', 'Cantidad', 'Precio', 'Total'],
-            [
-              '1',
-              'Producto 1',
-              '1',
-              CurrencyFormatter.formatCurrency(100),
-              CurrencyFormatter.formatCurrency(1100),
-            ],
-            [
-              '2',
-              'Producto 2',
-              '2',
-              CurrencyFormatter.formatCurrency(150),
+            ...order_details.map((orderDetail) => [
+              orderDetail.products.product_id.toString(),
+              orderDetail.products.product_name,
+              orderDetail.quantity.toString(),
               {
-                text: CurrencyFormatter.formatCurrency(500),
+                text: CurrencyFormatter.formatCurrency(
+                  parseFloat(orderDetail.products.price),
+                ),
                 alignment: 'right',
               },
-            ],
+              {
+                text: CurrencyFormatter.formatCurrency(
+                  parseFloat(orderDetail.products.price) * orderDetail.quantity,
+                ),
+                alignment: 'right',
+              },
+            ]),
           ],
         },
       },
@@ -119,14 +170,14 @@ export const orderByIdReport = (): TDocumentDefinitions => {
                 [
                   'Subtotal:',
                   {
-                    text: CurrencyFormatter.formatCurrency(1600),
+                    text: CurrencyFormatter.formatCurrency(subTotal),
                     alignment: 'right',
                   },
                 ],
                 [
                   { text: 'Total:', bold: true },
                   {
-                    text: CurrencyFormatter.formatCurrency(1920),
+                    text: CurrencyFormatter.formatCurrency(total),
                     alignment: 'right',
                     bold: true,
                   },

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Res } from '@nestjs/common';
 import { StoreReportsService } from './store-reports.service';
 import { Response } from 'express';
 
@@ -9,7 +9,7 @@ export class StoreReportsController {
   @Get('order/:orderId')
   async getOrderReport(
     @Res() res: Response,
-    @Param('orderId') orderId: string,
+    @Param('orderId', ParseIntPipe) orderId: number,
   ) {
     const pdfDoc = await this.storeReportsService.getOrderByIdReport(orderId);
 
