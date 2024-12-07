@@ -1,8 +1,9 @@
+import { getStatisticsReport } from './../reports/statistics.report';
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { PrinterService } from './../printer/printer.service';
 import { orderByIdReport } from './../reports/order-by-id.report';
-import { getBasicChatSvg } from 'src/reports';
+import { getBasicChatSvg, getHelloWorldReport } from 'src/reports';
 
 @Injectable()
 export class StoreReportsService extends PrismaClient implements OnModuleInit {
@@ -20,7 +21,7 @@ export class StoreReportsService extends PrismaClient implements OnModuleInit {
         order_id: orderId,
       },
       include: {
-        customers: true, // todo, sono hay que describirlo con un objeto
+        customers: true, // todos, sino hay que describirlo con un objeto
         order_details: {
           include: {
             products: true,
@@ -43,6 +44,32 @@ export class StoreReportsService extends PrismaClient implements OnModuleInit {
   async getSvgChart() {
     const docDefinition = await getBasicChatSvg();
     const doc = this.printerService.createPdfKitDocument(docDefinition);
+    return doc;
+  }
+
+  async getStatistics() {
+    const topCountries = await this.customers.groupBy({
+      by: ['country'],
+      _count: true, // se puede especificar la columna con {}
+      orderBy: {
+        _count: {
+          country: 'desc',
+        },
+      },
+      take: 10,
+    });
+
+    const topCountryData = topCountries.map(({ country, _count }) => ({
+      country,
+      customers: _count,
+    }));
+
+    const docDefinition = await getStatisticsReport({
+      topCountries: topCountryData,
+    });
+
+    const doc = this.printerService.createPdfKitDocument(docDefinition);
+
     return doc;
   }
 }
