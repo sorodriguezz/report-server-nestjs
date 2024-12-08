@@ -6,7 +6,7 @@ import {
   getHelloWorldReport,
 } from './../reports';
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
-import { PrismaClient, countries } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class BasicReportsService extends PrismaClient implements OnModuleInit {

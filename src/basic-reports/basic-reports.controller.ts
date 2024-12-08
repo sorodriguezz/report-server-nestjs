@@ -31,7 +31,9 @@ export class BasicReportsController {
     @Res() res: Response,
     @Param('employeeId', ParseIntPipe) employeeId: number,
   ) {
-    const pdfDoc = await this.basicReportsService.employmentLetterById(employeeId);
+    const pdfDoc = await this.basicReportsService.employmentLetterById(
+      employeeId,
+    );
 
     res.setHeader('Content-Type', 'application/pdf');
     pdfDoc.info.Title = 'Employment-Letter';
