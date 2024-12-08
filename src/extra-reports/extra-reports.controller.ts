@@ -7,7 +7,17 @@ export class ExtraReportsController {
   constructor(private readonly extraReportsService: ExtraReportsService) {}
 
   @Get('html-report')
-  async getHtmlRepor(@Res() res: Response) {
+  async getHtmlReport(@Res() res: Response) {
+    const pdfDoc = this.extraReportsService.getHtmlReport();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    pdfDoc.info.Title = 'Html-Report.pdf';
+    pdfDoc.pipe(res);
+    pdfDoc.end();
+  }
+
+  @Get('custom-report')
+  async getCustomReport(@Res() res: Response) {
     const pdfDoc = this.extraReportsService.getHtmlReport();
 
     res.setHeader('Content-Type', 'application/pdf');
