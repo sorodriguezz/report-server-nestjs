@@ -18,10 +18,20 @@ export class ExtraReportsController {
 
   @Get('custom-report')
   async getCustomReport(@Res() res: Response) {
-    const pdfDoc = this.extraReportsService.getHtmlReport();
+    const pdfDoc = this.extraReportsService.getCustomReport();
 
     res.setHeader('Content-Type', 'application/pdf');
-    pdfDoc.info.Title = 'Html-Report.pdf';
+    pdfDoc.info.Title = 'Custom Report.pdf';
+    pdfDoc.pipe(res);
+    pdfDoc.end();
+  }
+
+  @Get('custom-size')
+  async getCustomSizeReport(@Res() res: Response) {
+    const pdfDoc = this.extraReportsService.getCustomSize();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    pdfDoc.info.Title = 'Custom Report.pdf';
     pdfDoc.pipe(res);
     pdfDoc.end();
   }

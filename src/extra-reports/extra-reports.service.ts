@@ -5,6 +5,8 @@ import fs from 'fs';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { headerSection } from 'src/reports/sections/header.section';
 import { footerSection } from 'src/reports/sections/footer.section';
+import { getCustomReport } from 'src/reports/custom.report';
+import { text } from 'stream/consumers';
 
 @Injectable()
 export class ExtraReportsService {
@@ -29,6 +31,32 @@ export class ExtraReportsService {
     };
 
     const doc = this.printerService.createPdfKitDocument(docDefinition);
+    return doc;
+  }
+
+  getCustomReport() {
+    const docDefinition = getCustomReport();
+    const doc = this.printerService.createPdfKitDocument(docDefinition);
+    return doc;
+  }
+
+  getCustomSize() {
+    const doc = this.printerService.createPdfKitDocument({
+      // pageSize: 'TABLOID',
+      pageSize: {
+        width: 150,
+        height: 300,
+      },
+      content: [
+        { qr: 'http://devtalles.com', fit: 100, alignment: 'center' },
+        {
+          text: 'Reporte con tamaño',
+          fontSize: 10,
+          alignment: 'center',
+          margin: [0, 20],
+        },
+      ],
+    });
     return doc;
   }
 }
